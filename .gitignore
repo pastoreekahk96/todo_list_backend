@@ -1,0 +1,19 @@
+# Virtual env
+env/
+__pycache__/
+*.pyc
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Django secrets (add .env later)
+*.env
+
+# VSCode/editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
