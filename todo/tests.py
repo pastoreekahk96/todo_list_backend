@@ -14,7 +14,6 @@ class TodoAPISecurityTests(TestCase):
         self.user = User.objects.create_user(username="alice", password="StrongPass123!")
         self.other_user = User.objects.create_user(username="bob", password="StrongPass123!")
         self.token = Token.objects.create(user=self.user)
-        self.other_token = Token.objects.create(user=self.other_user)
 
     def authenticate(self, token):
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
