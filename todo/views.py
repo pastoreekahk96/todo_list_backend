@@ -46,6 +46,14 @@ def login(request):
     return Response({"token": token.key, "user_id": user.id})
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    """Invalidate the current user's token."""
+    Token.objects.filter(user=request.user).delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def task_list(request):
