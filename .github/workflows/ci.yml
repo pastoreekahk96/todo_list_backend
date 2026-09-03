@@ -70,8 +70,8 @@ jobs:
           DJANGO_ALLOWED_HOSTS: testserver,localhost,127.0.0.1
           DJANGO_SECURE_SSL_REDIRECT: "False"
           MYSQL_DATABASE: todo_db
-          MYSQL_USER: todo_user
-          MYSQL_PASSWORD: testpassword
+          MYSQL_USER: root
+          MYSQL_PASSWORD: rootpassword
           MYSQL_HOST: 127.0.0.1
           MYSQL_PORT: "3306"
         run: python manage.py test
