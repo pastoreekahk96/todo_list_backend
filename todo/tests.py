@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import TestCase
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -8,6 +9,7 @@ from .models import Task
 
 class TodoAPISecurityTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.client = APIClient()
         self.user = User.objects.create_user(username="alice", password="StrongPass123!")
         self.other_user = User.objects.create_user(username="bob", password="StrongPass123!")
@@ -29,6 +31,15 @@ class TodoAPISecurityTests(TestCase):
         self.assertNotEqual(user.password, "StrongPass123!")
         self.assertNotIn("password", response.data)
 
+    def test_registration_rejects_weak_password(self):
+        response = self.client.post(
+            "/api/register/",
+            {"username": "weakuser", "password": "12345678"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertNotIn("weakuser", User.objects.values_list("username", flat=True))
+
     def test_login_returns_token_for_valid_credentials(self):
         response = self.client.post(
             "/api/login/",
@@ -37,6 +48,19 @@ class TodoAPISecurityTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn("token", response.data)
+
+    def test_login_rejects_missing_credentials(self):
+        response = self.client.post("/api/login/", {}, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_logout_invalidates_token(self):
+        self.authenticate(self.token)
+        response = self.client.post("/api/logout/")
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Token.objects.filter(key=self.token.key).exists())
+
+        response = self.client.get("/api/tasks/")
+        self.assertEqual(response.status_code, 401)
 
     def test_tasks_require_authentication(self):
         response = self.client.get("/api/tasks/")
