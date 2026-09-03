@@ -1,19 +1,35 @@
-# Virtual env
+# Python virtual environments
 env/
-__pycache__/
-*.pyc
+.venv/
+venv/
 
-# Database
+# Python cache / compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django / local databases
 *.sqlite3
 db.sqlite3
 
-# Django secrets (add .env later)
-*.env
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
 
-# VSCode/editor files
+# Test / coverage output
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# Logs
+*.log
+
+# Editors
 .vscode/
 .idea/
 
 # OS files
 .DS_Store
-
+Thumbs.db
