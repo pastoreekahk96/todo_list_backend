@@ -4,20 +4,24 @@ A beginner-friendly Todo List REST API built with Django, Django REST Framework,
 
 ## Features
 
-- User registration
-- Token-based login
+- User registration with Django password validation
+- Token-based authentication
+- Token logout/invalidation
 - Authenticated task CRUD
 - Users can only access their own tasks
+- API request throttling for anonymous and authenticated clients
 - MySQL database support
 - Django admin task management
+- Automated tests and GitHub Actions CI
 
 ## Tech stack
 
-- Python 3
-- Django
+- Python 3.10+
+- Django 5.2 LTS
 - Django REST Framework
 - MySQL
 - Postman or another API client
+- GitHub Actions
 
 ## Setup
 
@@ -46,7 +50,10 @@ python -m venv env
 
 ### 3. Install dependencies
 
-Install Django, Django REST Framework, and the MySQL driver in your environment. Keep the exact versions you install in a `requirements.txt` file before deploying.
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
 ### 4. Configure environment variables
 
@@ -66,7 +73,7 @@ MYSQL_HOST=localhost
 MYSQL_PORT=3306
 ```
 
-Never commit your real `.env` file. The repository ignores `.env` files.
+For production, use a real secret manager or protected environment variables. Do not commit your real `.env` file.
 
 ### 5. Apply migrations
 
@@ -88,6 +95,7 @@ The API is available under `/api/`.
 |---|---|---|---|
 | POST | `/api/register/` | No | Create an account |
 | POST | `/api/login/` | No | Get an authentication token |
+| POST | `/api/logout/` | Token | Invalidate the current user's token |
 | GET | `/api/tasks/` | Token | List your tasks |
 | POST | `/api/tasks/` | Token | Create a task |
 | GET | `/api/tasks/<id>/` | Token | Get one of your tasks |
@@ -108,14 +116,46 @@ Run the Django test suite with:
 python manage.py test
 ```
 
-The tests cover password hashing, login tokens, authentication requirements, task ownership, and cross-user access protection.
+The tests cover:
+
+- Password hashing
+- Weak-password rejection
+- Login behavior
+- Missing credentials
+- Token logout/invalidation
+- Authentication requirements
+- Task ownership
+- Cross-user read, update, and delete protection
+- Protection against client-controlled task ownership
+
+GitHub Actions runs Django checks, database migrations, and the test suite against MySQL.
 
 ## Security notes
 
 - Secrets and database credentials are loaded from environment variables.
-- Registration hashes passwords through Django's `create_user()`.
+- Production mode enables secure session and CSRF cookies, content-type sniffing protection, frame protection, and strict referrer policy.
+- Registration uses Django's password hashing and password validators.
+- Protected API endpoints require token authentication.
+- Anonymous and authenticated API requests are throttled to reduce abuse.
 - Task ownership is assigned by the authenticated server-side user.
 - Clients cannot change task ownership through the serializer.
-- Protected endpoints require token authentication.
+- Logout deletes the user's token.
 
-If a credential was ever committed to Git history, rotate that credential even after removing it from the current source.
+### Credential rotation
+
+If a credential was ever committed to Git history, rotate that credential even after removing it from the current source. Removing a secret from the latest commit does not make an exposed credential safe.
+
+## Development checklist
+
+Before deploying changes:
+
+```bash
+python manage.py check
+python manage.py test
+```
+
+For production, run Django's deployment checks with the appropriate production environment variables and HTTPS configuration:
+
+```bash
+python manage.py check --deploy
+```
