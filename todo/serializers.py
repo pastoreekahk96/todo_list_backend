@@ -1,27 +1,31 @@
-from rest_framework import serializers
-from .models import Task
 from django.contrib.auth.models import User
+from rest_framework import serializers
 
-# Serializer for the Task model
+from .models import Task
+
+
 class TaskSerializer(serializers.ModelSerializer):
+    """Serialize tasks without allowing clients to change ownership."""
+
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = "__all__"
+        read_only_fields = ["user", "created_at"]
 
-# Serializer for user registration
+
 class UserSerializer(serializers.ModelSerializer):
+    """Validate registration data and create users with hashed passwords."""
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'password']
+        fields = ["id", "username", "password"]
+        read_only_fields = ["id"]
         extra_kwargs = {
+            "password": {"write_only": True, "min_length": 8},
+        }
 
-                'password': {'write_only': True}
-
-                }  # Hide password in output
-
-        def create(self, validated_data):
-            user = User.objects.create_user(
-            username=validated_data['username'],
-            password=validated_data['password']
-            )
-            return user
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+        )
