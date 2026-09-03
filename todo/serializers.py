@@ -6,12 +6,20 @@ from .models import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    """Serialize tasks without allowing clients to change ownership."""
+    """Serialize task data without allowing clients to change ownership."""
 
     class Meta:
         model = Task
-        fields = "__all__"
-        read_only_fields = ["user", "created_at"]
+        fields = [
+            "id",
+            "user",
+            "title",
+            "description",
+            "completed",
+            "created_at",
+            "due_date",
+        ]
+        read_only_fields = ["id", "user", "created_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
