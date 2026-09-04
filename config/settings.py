@@ -14,7 +14,9 @@ _hosts = [
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
     if host.strip()
 ]
-ALLOWED_HOSTS = _hosts or [".vercel.app"] if os.environ.get("VERCEL") else _hosts
+if not _hosts and os.environ.get("VERCEL"):
+    _hosts = [".vercel.app", ".vercel.sh"]
+ALLOWED_HOSTS = _hosts
 
 INSTALLED_APPS = [
     "django.contrib.admin",
