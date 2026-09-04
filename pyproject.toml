@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "todo-list-api"
+version = "0.1.0"
+description = "A Django REST API for authenticated todo tasks"
+requires-python = ">=3.12"
+dependencies = [
+  "Django==5.2.17",
+  "djangorestframework==3.18.0",
+  "mysqlclient==2.2.8; platform_system != 'Linux'",
+  "PyMySQL==1.1.2; platform_system == 'Linux'",
+]
+
+[tool.vercel]
+entrypoint = "config.wsgi:application"
