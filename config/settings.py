@@ -9,11 +9,12 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "django-insecure-vercel-buil
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = [
+_hosts = [
     host.strip()
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
     if host.strip()
 ]
+ALLOWED_HOSTS = _hosts or [".vercel.app"] if os.environ.get("VERCEL") else _hosts
 
 INSTALLED_APPS = [
     "django.contrib.admin",
