@@ -67,6 +67,9 @@ DATABASES = {
         "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
         "HOST": os.environ.get("MYSQL_HOST", "localhost"),
         "PORT": os.environ.get("MYSQL_PORT", "3306"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
@@ -101,6 +104,13 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# PyMySQL is used on Vercel's Linux runtime instead of mysqlclient, which
+# requires native MySQL client libraries that are unavailable during the build.
+if os.environ.get("VERCEL"):
+    import pymysql
+
+    pymysql.install_as_MySQLdb()
 
 # Production security settings. Enable HTTPS before enabling these in production.
 if not DEBUG:
