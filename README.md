@@ -13,6 +13,7 @@ A beginner-friendly Todo List REST API built with Django, Django REST Framework,
 - MySQL database support
 - Django admin task management
 - Automated tests and GitHub Actions CI
+- Vercel-compatible Python serverless deployment
 
 ## Tech stack
 
@@ -22,6 +23,7 @@ A beginner-friendly Todo List REST API built with Django, Django REST Framework,
 - MySQL
 - Postman or another API client
 - GitHub Actions
+- Vercel
 
 ## Setup
 
@@ -59,7 +61,7 @@ pip install -r requirements.txt
 
 Do not put secrets directly in `config/settings.py`.
 
-Set these variables in your local environment:
+Local MySQL variables:
 
 ```text
 DJANGO_SECRET_KEY=replace-with-a-long-random-secret
@@ -73,7 +75,7 @@ MYSQL_HOST=localhost
 MYSQL_PORT=3306
 ```
 
-For production, use a real secret manager or protected environment variables. Do not commit your real `.env` file.
+For production, use protected environment variables and never commit your real `.env` file.
 
 ### 5. Apply migrations
 
@@ -107,6 +109,26 @@ For protected endpoints, send:
 ```text
 Authorization: Token YOUR_TOKEN
 ```
+
+## Deploying to Vercel
+
+The repository includes `api/index.py` as the WSGI entrypoint and `vercel.json` for routing the application through a Vercel Python Function.
+
+Vercel should provide these production variables:
+
+```text
+DJANGO_SECRET_KEY=<strong-random-secret>
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=<your-vercel-domain>
+DJANGO_SECURE_SSL_REDIRECT=True
+DATABASE_URL=<your-production-mysql-connection-string>
+```
+
+`DATABASE_URL` is used when present, while local development continues to use the `MYSQL_*` variables.
+
+The Linux deployment uses `PyMySQL` because `mysqlclient` requires native MySQL client libraries that are not available in the Vercel build environment.
+
+After configuring the environment variables and database, deploy the `main` branch through the linked Vercel project.
 
 ## Testing
 
