@@ -5,9 +5,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("DJANGO_SECRET_KEY must be set.")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "django-insecure-vercel-build-only-placeholder"
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
